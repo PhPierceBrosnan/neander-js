@@ -209,12 +209,18 @@ function step(){
                 pc = fetch(pc + 1) - 1;
                 instructions++;
             }
+            else{
+                pc++;
+            }
         break;
 
         case JZ:
             if(z){
                 pc = fetch(pc + 1) - 1;
                 instructions++;
+            }
+            else{
+                pc++;
             }
         break;
 
@@ -268,94 +274,103 @@ function step(){
 }
 
 async function run(){
+
+    
     
     for(pc = pc; pc < code.length; pc++){
         code = createCodeArray();
         ac = ac.toString().replace("v", "");
         let instruction = translate(code[pc]);
         paint(pc);
-        switch(instruction){
-            case LDA:
-                pc++;
-                lda(pc);
-                memory_fetches++;
-                instructions++;
-            break;
+            switch(instruction){
+                case LDA:
+                    pc++;
+                    lda(pc);
+                    memory_fetches++;
+                    instructions++;
+                break;
 
-            case STA:
-                pc++;
-                sta(pc);
-                memory_fetches++;
-                instructions++;
-                
-            break;
+                case STA:
+                    pc++;
+                    sta(pc);
+                    memory_fetches++;
+                    instructions++;
+                    
+                break;
 
-            case HLT:
-                pc++;
-                instructions++;
-                update(ac, pc, z, n);
-                return;
-            break;
+                case HLT:
+                    pc++;
+                    instructions++;
+                    update(ac, pc, z, n);
+                    return;
+                break;
 
-            case JMP:
-                pc = fetch(pc + 1) - 1;
-                instructions++;
-            break;
-
-            case JN:
-                if(n){
+                case JMP:
                     pc = fetch(pc + 1) - 1;
                     instructions++;
-                }
-            break;
+                break;
 
-            case JZ:
-                if(z){
-                    pc = fetch(pc + 1) - 1;
+                case JN:
+                    if(n){
+                        pc = fetch(pc + 1) - 1;
+                        instructions++;
+                    }
+                    else{
+                        pc++;
+                    }
+                break;
+
+                case JZ:
+                    if(z){
+                        pc = fetch(pc + 1) - 1;
+                        instructions++;
+                    }
+                    else{
+                        pc++;
+                    }
+                break;
+
+                case OR:
+                    pc++;
+                    curr_ac = ac.toString();
+                    bin1 = (+curr_ac).toString(2);
+                    fetched_data = fetch(fetch(pc)).toString();
+                    bin2 = (+fetched_data).toString(2);
+                    ac = or(bin1, bin2);
                     instructions++;
-                }
-            break;
+                break;
 
-            case OR:
-                pc++;
-                curr_ac = ac.toString();
-                bin1 = (+curr_ac).toString(2);
-                fetched_data = fetch(fetch(pc)).toString();
-                bin2 = (+fetched_data).toString(2);
-                ac = or(bin1, bin2);
-                instructions++;
-            break;
+                case NOT:
+                    curr_ac = ac.toString();
+                    bin1 = (+curr_ac).toString(2);
+                    ac = not(bin1);
+                    instructions++;
+                break;
 
-            case NOT:
-                curr_ac = ac.toString();
-                bin1 = (+curr_ac).toString(2);
-                ac = not(bin1);
-                instructions++;
-            break;
+                case AND:
+                    pc++;
+                    curr_ac = ac.toString();
+                    bin1 = (+curr_ac).toString(2);
+                    fetched_data = fetch(fetch(pc)).toString();
+                    bin2 = (+fetched_data).toString(2);
+                    ac = and(bin1, bin2);
+                    instructions++;
+                break;
 
-            case AND:
-                pc++;
-                curr_ac = ac.toString();
-                bin1 = (+curr_ac).toString(2);
-                fetched_data = fetch(fetch(pc)).toString();
-                bin2 = (+fetched_data).toString(2);
-                ac = and(bin1, bin2);
-                instructions++;
-            break;
+                case ADD:
+                    pc++;
+                    curr_ac = ac;
+                    fetched_data = fetch(fetch(pc));
 
-            case ADD:
-                pc++;
-                curr_ac = ac;
-                fetched_data = fetch(fetch(pc));
+                    
+                    ac = add(parseInt(curr_ac), parseInt(fetched_data));
+                    
 
-                
-                 ac = add(parseInt(curr_ac), parseInt(fetched_data));
-                
-
-                
-                instructions++;
-            break;
-        }
+                    
+                    instructions++;
+                break;
+            }
+        
         if(ac > 127){
             n = true;
             z = false;
