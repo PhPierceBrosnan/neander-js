@@ -11,6 +11,6 @@ Pode ser acessado [aqui](https://reonardoleis.github.io/neanderjs).
 
 # TODO
 - Adicionar contador de acessos e instruções
-- Adicionar modo step(ok)
 - Corrigir possíveis bugs
 - Adicionar importação em Assembly formato Hidra
+- Testes com Jumps condicionais
